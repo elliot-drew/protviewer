@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <link rel="stylesheet" href="./css/material.min.css">
+    <script src="./css/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="./js/ngl.js"></script>
+    <script src="./js/xml-js.min.js"></script>
+    <link rel="stylesheet" href="./css/getmdl-select.min.css">
+    <script src="./js/getmdl-select.min.js"></script>
+    <script src="./js/pairwise_align_protein.js"></script>
+    <script src="./js/align_pair_linear.js"></script>
+    <script src="./js/align_pair_quad.js"></script>
+    <script src="./js/sms_common.js"></script>
+    <style>
+      .sidenav {
+        height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
+        width: 20%; /* Set the width of the sidebar */
+        position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+        z-index: 1; /* Stay on top */
+        top: 55px; /* Stay at the top */
+        
+        left: 0;
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding: 5px 0 5px 0;
+        background-color: white;
+        /* border-right: solid rgb(133, 162, 185) 2px;  */
+        box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 20%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+      }
+      .sideControl {
+        height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
+        width: 20%; /* Set the width of the sidebar */
+        position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+        z-index: 1; /* Stay on top */
+        top: 55px; /* Stay at the top */
+        
+        right: 0;
+        overflow-x: hidden; /* Disable horizontal scroll */
+        padding: 5px;
+        background-color: white;
+        box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 20%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+
+      }
+      .threeDcontent {
+        position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+        z-index: 0; /* Stay on top */
+        top: 55px; /* Stay at the top */
+        left: 20%;
+        /* margin-left:25%; */
+        /* bottom:60px; */
+        height:calc(100% - 55px);
+        width:60%;
+      }
+       /* Style the buttons that are used to open and close the accordion panel */
+      .accordion {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        transition: 0.4s;
+      }
+
+      /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+      .accordion:hover {
+        background-color: #ccc;
+      }
+      .accordionInner {
+        font-size: 0.8em;
+        background-color: rgb(250, 250, 250);
+        color: #444;
+        cursor: pointer;
+        padding: 12px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        transition: 0.4s;
+      }
+      .accordionInnerDisabled {
+        font-size: 0.8em;
+        background-color: rgb(250, 250, 250);
+        color: rgb(145, 145, 145);
+        cursor: pointer;
+        padding: 12px;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        transition: 0.4s;
+      }
+
+      /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+      .activeInner, .accordionInner:hover {
+        background-color: #ccc;
+      }
+
+      /* Style the accordion panel. Note: hidden by default */
+      .panel {
+        
+        padding: 0;
+        background-color: white;
+        display: none;
+        overflow: hidden;
+      } 
+      .loading {
+        display: none;
+        background-color: white;
+        opacity: 0.5;
+        position: fixed;
+        top:0px;
+        left:0px;
+        width:100%;
+        height:100%;
+        z-index:100;
+        text-align: center;
+      }
+      .loadingChild {
+        
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width:100px;
+        height:100px;
+        margin: -50px 0 0 -50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading" id="loadSpin">
+    <div class="mdl-spinner mdl-js-spinner is-active loadingChild"></div>
+    </div>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          
+          
+
+          <form action="#">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="uniprotInput" value="P20062">
+              <label class="mdl-textfield__label" for="uniprotInput">UniProt Acc...</label>
+            </div>
+            <button class="mdl-button mdl-js-button mdl-button--icon" id="uniprotButton">
+              <i class="material-icons">search</i>
+            </button>
+          </form>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <select class="mdl-textfield__input" id="pdblistdrop" name="pdblistdrop" value="">
+              <option style="color:black" selected></option>
+              
+              
+            </select>
+            
+          </div>
+          <div class="mdl-layout-spacer"></div>
+          <button id="downloadMenu"
+                class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">download</i>
+          </button>
+
+          <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+              for="downloadMenu">
+            <li id="uniEntryPage" class="mdl-menu__item ">Uniprot entry page</li>
+            <li id="strucEntryPage" class="mdl-menu__item mdl-menu__item--full-bleed-divider">Structure entry page</li>
+            <li id="strucEntryDownload" class="mdl-menu__item">Structure download</li>
+          </ul>
+
+          <button id="screenshot"
+                class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">photo</i>
+          </button>
+        </div>
+      </header>
+      
+      <main class="mdl-layout__content">
+        <div class="sidenav">
+          <br>
+        
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:70%">
+            <input class="mdl-textfield__input" type="number" id="residInput" value="">
+            <label class="mdl-textfield__label" for="residInput">UniProt res. number</label>
+            
+          </div>
+          <button class="mdl-button mdl-js-button mdl-button--icon" id="residButton">
+            <i class="material-icons">east</i>
+          </button>
+        
+          <div id="uniprotList">
+            <button class="accordion">Active Sites</button>
+            <div class="panel" id="panel-ASlist">
+              
+            </div>
+            <button class="accordion">Binding Sites</button>
+            <div class="panel" id="panel-BSlist">
+              
+            </div>
+            <button class="accordion">Metal ion-binding Sites</button>
+            <div class="panel" id="panel-MBSlist">
+              
+            </div>
+            <button class="accordion">Natural Variants</button>
+            <div class="panel" id="panel-SNPlist">
+              
+            </div>
+          </div>
+        </div>
+        <div class="threeDcontent">
+          <div id="viewport" style="width:100%; height:100%;"></div>
+        </div>
+        <div class="sideControl">
+          <br>
+         
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            
+            <select class="mdl-textfield__input" id="backtracetype" name="backtracetype" value="">
+              <option style="color:black" value="cartoon" >Cartoon</option>   
+              <option style="color:black" value="trace">Trace</option>
+              <option style="color:black" value="tube" selected>Tube</option>   
+                         
+            </select>
+            <label class="mdl-textfield__label" for="backtracetype">Backbone representation</label>
+            
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            
+            <select class="mdl-textfield__input" id="backcolor" name="backcolor" value="">
+              <option style="color:black" value="uniform" selected>Uniform</option>
+              <option style="color:black" value="atomindex" >Rainbow</option>
+              <option style="color:black" value="sstruc" >Secondary Structure</option>
+              
+              
+            </select>
+            <label class="mdl-textfield__label" for="backcolor">Backbone color</label>
+            
+            
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="uniformColor" type="color" value="#ededed", name="uniformColor">
+            <label class="mdl-textfield__label" for="uniformColor">Uniform Color Choice</label>  
+          </div>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="backgroundColor" type="color" value="#000000", name="backgroundColor">
+            <label class="mdl-textfield__label" for="backgroundColor">Background Color</label>  
+          </div>  
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" id="labelColor" type="color" value="#ffffff", name="labelColor">
+            <label class="mdl-textfield__label" for="labelColor">Label Color</label>  
+          </div>  
+          <hr>
+          <input class="mdl-slider mdl-js-slider" id="fognear" type="range" min="0" max="100" value="50" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="fogfar" type="range" min="0" max="100" value="100" tabindex="0">
+          <hr>
+          <input class="mdl-slider mdl-js-slider" id="clipdist" type="range" min="0" max="100" value="10" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="clipnear" type="range" min="0" max="100" value="0" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="clipfar" type="range" min="0" max="100" value="100" tabindex="0">
+          <hr>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-AS">
+            <input type="checkbox" id="chk-AS" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Active sites</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-BS">
+            <input type="checkbox" id="chk-BS" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Binding sites</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-MBS">
+            <input type="checkbox" id="chk-MBS" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Metal ion-binding</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-SNP">
+            <input type="checkbox" id="chk-SNP" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Natural Variants</span>
+          </label>
+          <hr>
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="number" id="neighborRadiiInput" value="5" step='0.1'>
+            <label class="mdl-textfield__label" for="neighborRadiiInput">Neighborhood range (Angstroms)</label>
+            
+          </div>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-plbl">
+            <input type="checkbox" id="chk-plbl" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Picked feature label</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-nlbl">
+            <input type="checkbox" id="chk-nlbl" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Neighbor labels</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-n">
+            <input type="checkbox" id="chk-n" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Neighbors</span>
+          </label>
+          <hr>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-bckbn">
+            <input type="checkbox" id="chk-bckbn" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Backbone</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-Lig">
+            <input type="checkbox" id="chk-Lig" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Ligands</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-ion">
+            <input type="checkbox" id="chk-ion" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Ions</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-Water">
+            <input type="checkbox" id="chk-Water" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Water</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-dna">
+            <input type="checkbox" id="chk-dna" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">DNA/RNA</span>
+          </label>
+          <hr>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-hp">
+            <input type="checkbox" id="chk-hp" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Hydrophobic</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-sb">
+            <input type="checkbox" id="chk-sb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Salt bridge</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-hb">
+            <input type="checkbox" id="chk-hb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">H bonds</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-bhb">
+            <input type="checkbox" id="chk-bhb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Backbone H bonds</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-whb">
+            <input type="checkbox" id="chk-whb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Water H bonds</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-wkhb">
+            <input type="checkbox" id="chk-wkhb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Weak H bonds</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-halb">
+            <input type="checkbox" id="chk-halb" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Halogen bond</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-mc">
+            <input type="checkbox" id="chk-mc" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Metal Complex</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-cp">
+            <input type="checkbox" id="chk-cp" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Cation-Pi</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-ps">
+            <input type="checkbox" id="chk-ps" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label" style="font-size: small;">Pi-stacking</span>
+          </label>
+        </div>
+      </main>
+    </div>
+    <script>
+
+
+
+      var stage;
+      var uniObj={};
+      var info={
+        "pdblist":[],
+        "SNPlist":[],
+      };
+      var pdbinfo={};
+      var alignment;
+      var pdbid;
+      var pdbtext="";
+      var mode;
+      var uniacc;
+      var chain="A";
+      var mapU2P=[];
+      var selection={
+        "mut":[],
+      }; // this holds all selections from uniprot data
+      // intialise specific reps
+
+      var picked=-9999999; // currently picked residue, used by changeProtView
+      var radii=5;
+
+      var contactRep; // contacts
+      var mainBackboneRepCartoon;
+      var mainBackboneRepTrace;
+      var mainBackboneRepTube;
+      var restBackboneRepCartoon;
+      var restBackboneRepTrace;
+      var restBackboneRepTube;
+      
+      var mutRep; // SNP residue
+      var bsRep; // bindind site res
+      var mbsRep; // bindind site res
+      var asRep; // bindind site res
+
+      var colors={
+        "mut":"#FF5877",
+        "bs":"#00CC33",
+        "mbs":"#1F5C33",
+        "as":"#1A73C7",
+        "roi":"#222277",
+        "ds":"grey",
+        "label":"#ffffff",
+        "uniform":"#ededed",
+        "bkground":"#000000"
+      }
+
+      var pickedRep;
+      var pickedLabelRep;
+      var neighborRep; // neighborhood of SNP loc
+      var neighborLabelRep; // neighborhood of SNP loc
+      var waterRep;
+      var ligandRep;
+      var ionRep;
+      var dnaRep1;
+      var dnaRep2;
+
+      
+
+      //some variables to hold rep status
+      var backbone={
+        "color":"#ededed",
+        "rep":"tube"
+      }
+
+      var stageState={
+        "fognear":50,
+        "fogfar":100,
+        "clipdist":10,
+        "clipnear":0,
+        "clipfar":100,
+      }
+
+      stage = new NGL.Stage("viewport",
+      {
+        backgroundColor: colors.bkground,
+        fogNear:stageState.fognear,
+        fogFar:stageState.fogfar,
+        clipDist:stageState.clipdist,
+        clipNear:stageState.clipnear,
+        clipFar:stageState.clipfar,
+        cameraType:"orthographic",
+      });
+      //stage.loadFile("rcsb://1crn.mmtf", {defaultRepresentation: true});
+      // Handle window resizing
+      
+      window.addEventListener( "resize", function( event ){
+          stage.handleResize();
+      }, false );
+      
+      //uniprotSubmit("P20062");
+
+      function loadStructure (pdbid, chain, selection, mode, smrText) {
+        let mutSelec;
+        
+        if(selection.mut.length==0){
+          mutSelec="none"
+        }else{
+          mutSelec=":"+chain+" and ("+selection.mut.join(" or ")+")"
+        }
+
+        let bsSelec;
+        
+        if(selection.bs.length==0){
+          bsSelec="none"
+        }else{
+          bsSelec=":"+chain+" and ("+selection.bs.join(" or ")+")"
+        }
+
+        if(selection.mbs.length==0){
+          mbsSelec="none"
+        }else{
+          mbsSelec=":"+chain+" and ("+selection.mbs.join(" or ")+")"
+        }
+        
+        if(selection.as.length==0){
+          asSelec="none"
+        }else{
+          asSelec=":"+chain+" and ("+selection.as.join(" or ")+")"
+        }
+
+        function repOnLoad(o) {
+          mainBackboneRepTrace=o.addRepresentation("trace", {sele:":"+chain,color:backbone.color});
+          restBackboneRepTrace=o.addRepresentation("trace", {sele:"not :"+chain,color:"grey", opacity:"0.3"});
+          mainBackboneRepTube=o.addRepresentation("tube", {sele:":"+chain,color:backbone.color});
+          restBackboneRepTube=o.addRepresentation("tube", {sele:"not :"+chain,color:"grey", opacity:"0.3"});
+          mainBackboneRepCartoon=o.addRepresentation("cartoon", {sele:":"+chain,color:backbone.color});
+          restBackboneRepCartoon=o.addRepresentation("cartoon", {sele:"not :"+chain,color:"lightgrey", opacity:"0.3"});
+          
+          // DNA/RNA stuff
+          dnaRep1=o.addRepresentation("tube", {
+            sele: "nucleic", wireframe: false, 
+            color:"white"
+          })
+          dnaRep2=o.addRepresentation("line", {
+            sele: "DG or DA or DT or DC or DU", color: "resname"
+          })
+          
+
+          mutRep = o.addRepresentation("licorice", {sele:mutSelec, colorValue:colors.mut});
+          bsRep = o.addRepresentation("licorice", {sele:bsSelec, colorValue:colors.bs});
+          mbsRep = o.addRepresentation("licorice", {sele:mbsSelec, colorValue:colors.mbs});
+          asRep = o.addRepresentation("licorice", {sele:asSelec, colorValue:colors.as});
+
+          pickedRep = o.addRepresentation("licorice", {sele:"none", colorValue:"cyan"});
+          pickedLabelRep = o.addRepresentation("label", 
+          {
+            sele:"none", 
+            color:colors.label, 
+            radiusType: "size",
+            radiusSize: 2.0,
+            labelType: "residue",
+            labelGrouping: "residue"
+          });
+          
+          ligandRep=o.addRepresentation("hyperball", {sele:"ligand", colorValue:"white"});
+          waterRep=o.addRepresentation("line", {sele:"water"});
+          ionRep=o.addRepresentation("hyperball", {sele:"ion"});
+
+          neighborRep = o.addRepresentation("line", {sele:"none"});
+          neighborLabelRep = o.addRepresentation("label", 
+          {
+            sele:"none", 
+            color:colors.label, 
+            radiusType: "size",
+            radiusSize: 1.5,
+            labelType: "residue",
+            labelGrouping: "residue"
+          });
+
+          contactRep = o.addRepresentation("contact", {
+            sele: "none",
+            radiusSize: 0.1,
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          })
+          //stage.setFocus(0);
+
+          // deal with visibility stuff
+          mutRep.setVisibility(SNPchecked); 
+          bsRep.setVisibility(BSchecked); 
+          mbsRep.setVisibility(MBSchecked); 
+          asRep.setVisibility(ASchecked); 
+          waterRep.setVisibility(waterchecked); 
+          ionRep.setVisibility(ionchecked); 
+          dnaRep1.setVisibility(dnachecked);
+          dnaRep2.setVisibility(dnachecked);
+          ligandRep.setVisibility(ligchecked); 
+          neighborLabelRep.setVisibility(nlblchecked);
+          pickedLabelRep.setVisibility(plblchecked);
+          neighborRep.setVisibility(nchecked);
+          
+          if(bckbnchecked){
+            if(backbone.rep=="trace"){
+              mainBackboneRepTrace.setVisibility(true)
+              mainBackboneRepCartoon.setVisibility(false)
+              restBackboneRepTrace.setVisibility(true)
+              restBackboneRepCartoon.setVisibility(false)
+              mainBackboneRepTube.setVisibility(false)
+              restBackboneRepTube.setVisibility(false)
+            }else if(backbone.rep=="cartoon"){
+              mainBackboneRepTrace.setVisibility(false)
+              mainBackboneRepCartoon.setVisibility(true)
+              restBackboneRepTrace.setVisibility(false)
+              restBackboneRepCartoon.setVisibility(true)
+              mainBackboneRepTube.setVisibility(false)
+              restBackboneRepTube.setVisibility(false)
+            }else if(backbone.rep=="tube"){
+              mainBackboneRepTrace.setVisibility(false)
+              mainBackboneRepCartoon.setVisibility(false)
+              restBackboneRepTrace.setVisibility(false)
+              restBackboneRepCartoon.setVisibility(false)
+              mainBackboneRepTube.setVisibility(true)
+              restBackboneRepTube.setVisibility(true)
+            }
+          }else{
+            mainBackboneRepTrace.setVisibility(false)
+            mainBackboneRepCartoon.setVisibility(false)
+            restBackboneRepTrace.setVisibility(false)
+            restBackboneRepCartoon.setVisibility(false)
+            mainBackboneRepTube.setVisibility(false)
+            restBackboneRepTube.setVisibility(false)
+          }
+
+          stage.compList[0].autoView(":"+chain,1000);
+          document.getElementById("loadSpin").style.display="none"
+        }
+        
+        stage.removeAllComponents()
+        var url;
+        if(mode=="rcsb"){
+          url = "rcsb://" + pdbid + ".mmtf";
+          return stage.loadFile(url).then(function (o) {
+            repOnLoad(o);
+          });
+        }else if(mode=="SMR"){
+          stringBlob = new Blob( [ smrText ], { type: 'text/plain'} );
+        
+          stage.loadFile(stringBlob, { 
+              ext: "pdb",
+              name: pdbid+"_"+chain
+          }).then(function (o) {
+            repOnLoad(o)
+          });
+        }
+        
+        
+      }
+
+      const aa_3to1 = {
+        "GLY":"G",
+        "ASP":"D",
+        "ALA":"A",
+        "HIS":"H",
+        "THR":"T",
+        "TYR":"Y",
+        "TRP":"W",
+        "LEU":"L",
+        "ILE":"I",
+        "VAL":"V",
+        "MET":"M",
+        "PHE":"F",
+        "PRO":"P",
+        "SER":"S",
+        "CYS":"C",
+        "ASN":"N",
+        "GLN":"Q",
+        "GLU":"E",
+        "LYS":"K",
+        "ARG":"R"
+    }
+
+      async function getPDB(pdbid){
+        
+        let response = await fetch('https://files.rcsb.org/view/'+pdbid+'.pdb');
+
+        if (response.ok) { // if HTTP-status is 200-299
+          // get the response body (the method explained below)
+          let pdb = await response.text();
+          
+          // now we get for each chain the sequence and the residue numbers
+          pdbinfo={};
+          pdbtext=pdb.split("\n");
+          let resnum_old=9999999999999;
+          for(let i=0;i<pdbtext.length;i++){
+            if(pdbtext[i].startsWith("ATOM")){
+              let line=pdbtext[i].split("");
+              let ch=line.slice(21,22)
+              let resn=line.slice(17,20).join("").trim()
+              let resnum=line.slice(22,26).join("").trim()
+              if(resnum!=resnum_old){
+                if(!(ch in pdbinfo)){
+                  pdbinfo[ch]={
+                    "seq":[],
+                    "nums":[]
+                  };
+                }
+                if(resn in aa_3to1){
+                  resn_tmp=aa_3to1[resn];
+                }else{
+                  resn_tmp="X";
+                }
+                pdbinfo[ch].seq.push(resn_tmp); // one letter code
+                pdbinfo[ch].nums.push(resnum);
+                resnum_old=resnum;
+              }
+            }
+          }
+          mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
+          //return(pdbinfo);
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+        
+        
+      }
+
+      async function getSMR(uniacc){
+        
+        let response = await fetch('https://swissmodel.expasy.org/repository/uniprot/'+uniacc+'.pdb');
+
+        if (response.ok) { // if HTTP-status is 200-299
+          // get the response body (the method explained below)
+          let pdb = await response.text();
+          
+          // now we get for each chain the sequence and the residue numbers
+          pdbinfo={};
+          pdbtext=pdb.split("\n");
+          let resnum_old=9999999999999;
+          for(let i=0;i<pdbtext.length;i++){
+            if(pdbtext[i].startsWith("ATOM")){
+              let line=pdbtext[i].split("");
+              let ch=line.slice(21,22)
+              let resn=line.slice(17,20).join("").trim()
+              let resnum=line.slice(22,26).join("").trim()
+              if(resnum!=resnum_old){
+                if(!(ch in pdbinfo)){
+                  pdbinfo[ch]={
+                    "seq":[],
+                    "nums":[]
+                  };
+                }
+                if(resn in aa_3to1){
+                  resn_tmp=aa_3to1[resn];
+                }else{
+                  resn_tmp="X";
+                }
+                pdbinfo[ch].seq.push(resn_tmp); // one letter code
+                pdbinfo[ch].nums.push(resnum);
+                resnum_old=resnum;
+              }
+            }
+          }
+          mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
+          
+          info.pdblist=["SMR_"+uniacc]
+          pdbid="SMR_"+uniacc
+          chain="A" // assumption
+          let dropList=document.getElementById("pdblistdrop");
+          let text=""
+          
+          text+='<option style="color:black" selected>'+"SMR_"+uniacc+'</option>\n'
+          
+          dropList.innerHTML=text;
+
+          return(pdb);
+        } else {
+          return("failed")
+        }
+        
+        
+      }
+
+      function processAlignment(u,p,presn){
+        //need residue number of first residue in PDB chain
+        console.log(presn)
+        alignment=pairwiseAlignProtein("a", u, "p", p);
+        let mapping=[]; // this is length of uniprot sequence. residue numbers of aligned PDB res. -999
+        
+        let us_split=alignment.us.split("");
+        let ps_split=alignment.ps.split("");
+
+        let ucounter=0;
+        let pcounter=0;
+        for(let i=0;i<us_split.length;i++){
+          
+
+          // seems stupid we check this so much but its quick, who cares
+          if(us_split[i]!="-"){
+            if(ps_split[i]=="-"){
+              mapping.push(-999)
+            }else{
+              mapping.push(presn[pcounter])
+            }
+            ucounter+=1;
+          }
+          if(ps_split[i]!="-"){
+            pcounter+=1
+          }
+          
+        }
+        return(mapping)
+      }
+
+      async function getUniProt(acc){
+        
+        let response = await fetch('https://www.uniprot.org/uniprot/'+acc+'.xml');
+
+        if (response.ok) { // if HTTP-status is 200-299
+          // get the response body (the method explained below)
+          let uniXML = await response.text();
+          return(uniXML)
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+        
+        
+      }
+
+      async function getUniProt2(acc){
+        await getUniProt(acc).then((text) => uniObj=xml2js(text).elements[0].elements[0].elements)
+        return(uniObj)
+      }
+
+      function getInfo(uo){ // take uniobject as input
+        let pdbList=[];
+        let SNPList=[];
+        let BSList=[];
+        let ASList=[];
+        let MBSList=[];
+        let seq="";
+
+        for(i=0;i<uo.length;i++){
+          // PDB NAMES
+          if(uo[i].name=="dbReference"){
+            if("attributes" in uo[i]){
+              if("type" in uo[i].attributes){
+                if(uo[i].attributes.type=="PDB"){
+                  //pdbList.push(uo[i].attributes.id)
+                  if("elements" in uo[i]){
+                    console.log("in here")
+                    for(let j=0;j<uo[i].elements.length;j++){
+                      if(uo[i].elements[j].attributes.type=="chains"){
+                        tmp_chains=uo[i].elements[j].attributes.value.split("=")[0]
+                        tmp_chains=tmp_chains.split("/")
+                        for(let k=0;k<tmp_chains.length;k++){
+                          pdbList.push(uo[i].attributes.id+"_"+tmp_chains[k]);
+                        }
+                      }
+                    }
+                  }
+                  
+                }
+              }
+            }
+          }
+          // GETTING VARIOUS FEATURES
+          if(uo[i].name=="feature"){
+            if("attributes" in uo[i]){
+              if("type" in uo[i].attributes){
+                //SEQUENCE VARIANTS
+                if(uo[i].attributes.type=="sequence variant"){
+                  if(uo[i].elements.length==3){
+                    SNPList.push({
+                      "id":uo[i].attributes.id,
+                      "orig": uo[i].elements[0].elements[0].text,
+                      "mut": uo[i].elements[1].elements[0].text,
+                      "loc": uo[i].elements[2].elements[0].attributes.position
+                    })
+                  }
+                  
+                }
+                //Binding sites
+                if(uo[i].attributes.type=="binding site"){
+                  if(uo[i].elements.length==1){
+                    BSList.push({
+                      "description":uo[i].attributes.description,
+                      "loc": uo[i].elements[0].elements[0].attributes.position
+                    })
+                  }
+                  
+                }
+                //metal ion binding sites
+                if(uo[i].attributes.type=="metal ion-binding site"){
+                  if(uo[i].elements.length==1){
+                    MBSList.push({
+                      "description":uo[i].attributes.description,
+                      "loc": uo[i].elements[0].elements[0].attributes.position
+                    })
+                  }
+                  
+                }
+                //Active sites
+                if(uo[i].attributes.type=="active site"){
+                  if(uo[i].elements.length==1){
+                    ASList.push({
+                      "description":uo[i].attributes.description,
+                      "loc": uo[i].elements[0].elements[0].attributes.position
+                    })
+                  }
+                  
+                }
+              }
+            }
+          }
+          // GET SEQUENCE
+          if("name" in uo[i]){
+            if(uo[i].name=="sequence"){
+              seq=uo[i].elements[0].text
+            }
+          }
+        }
+        
+        
+        
+        let info={
+          "pdblist":pdbList,
+          "SNPlist":SNPList,
+          "uSeq":seq,
+          "BSlist":BSList,
+          "MBSlist":MBSList,
+          "ASlist":ASList,
+        }
+        return(info)
+      }
+
+      function uniprotSubmit(acc){
+        document.getElementById("loadSpin").style.display="block"
+        getUniProt2(acc).then(function(){
+          console.log(uniObj)
+          info=getInfo(uniObj);
+          console.log(info)
+          if(info.pdblist.length>0){
+            // update drop box
+            let dropList=document.getElementById("pdblistdrop");
+            let text=""
+            for(let i=0;i<info.pdblist.length;i++){
+              if(i==0){
+                text+='<option style="color:black" selected>'+info.pdblist[i]+'</option>\n'
+                
+              }else{
+                text+='<option style="color:black">'+info.pdblist[i]+'</option>\n'
+              }
+            }
+            
+            dropList.innerHTML=text;
+            //createUniInfo();
+            //dropList.value=info.pdblist[i]
+            pdbid=info.pdblist[0].split("_")[0]
+            chain=info.pdblist[0].split("_")[1]
+            mode="rcsb";
+            getPDB(pdbid).then(function(){  
+              loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+            });
+            
+          }else{
+            getSMR(acc).then(function(text){
+              pdbtext=text;
+              if(pdbtext=="failed"){
+                console.log("NO PDBID MATCH")
+                let dropList=document.getElementById("pdblistdropUL");
+                let text='<option style="color:black">None</option>'
+                  
+                dropList.innerHTML=text;
+                dropList.value=info.pdblist[i]
+              }else{
+                mode="SMR"
+                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+              }
+            });
+            
+          }
+          
+        })
+        
+      }
+
+      
+
+      
+
+      function changeProtView(resid, chain){
+        // chain set globally by picking from PDB dropdown?
+        
+        resid_tmp=mapU2P[parseInt(resid)-1]
+        let selec=":"+chain+" and "+resid_tmp;
+        if(resid_tmp!=-999){
+
+          
+          let s = stage.compList[0].structure;
+
+          let withinSele = s.getAtomSetWithinSelection(new NGL.Selection(selec), radii);
+          let withinGroup = s.getAtomSetWithinGroup(withinSele);
+          let expandedSele = withinGroup.toSeleString();
+          contactRep.setSelection(expandedSele);
+          neighborRep.setSelection(expandedSele);
+          console.log("("+expandedSele+") and not "+selec)
+          neighborLabelRep.setSelection("("+expandedSele+") and not ("+selec+")");//+" and .CA");
+          pickedRep.setSelection(selec)
+          pickedLabelRep.setSelection(selec);//+" and .CA")
+          stage.compList[0].autoView(expandedSele,1000)
+          return(true)
+        }else{
+          console.log("Res not in struc")
+        }
+      }
+
+      function loadStructureWrapper(pdbid, chain, info, mode, smrText){
+        
+        let snps=info.SNPlist
+        let mutSelection=[];
+        for(let i=0;i<snps.length;i++){
+          mutSelection.push(mapU2P[parseInt(snps[i].loc)-1]);
+        }
+        let bs=info.BSlist
+        let bsSelection=[];
+        for(let i=0;i<bs.length;i++){
+          bsSelection.push(mapU2P[parseInt(bs[i].loc)-1]);
+        }
+
+        let mbs=info.MBSlist
+        let mbsSelection=[];
+        for(let i=0;i<mbs.length;i++){
+          mbsSelection.push(mapU2P[parseInt(mbs[i].loc)-1]);
+        }
+
+        let as=info.ASlist
+        let asSelection=[];
+        for(let i=0;i<as.length;i++){
+          asSelection.push(mapU2P[parseInt(as[i].loc)-1]);
+        }
+        //disable/enable features in accordion
+        //mapU2P[parseInt(resid)-1]
+        selection={
+          "mut":mutSelection,
+          "bs":bsSelection,
+          "mbs":mbsSelection,
+          "as":asSelection,
+        }
+        createUniInfo();
+        loadStructure(pdbid,chain, selection, mode, smrText)
+      }
+
+      function createUniInfo(){
+        
+        // variants
+        let accord=document.getElementById("panel-"+"SNPlist");
+        accord.innerHTML=""
+        for(let j=0;j<info["SNPlist"].length;j++){
+          if(mapU2P[parseInt(info["SNPlist"][j].loc)-1]!=-999){
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInner")
+            butt_tmp.id="SNPlist-"+info["SNPlist"][j].loc
+            butt_tmp.innerHTML+=info["SNPlist"][j].orig+
+                                info["SNPlist"][j].loc+info["SNPlist"][j].mut+
+                                " "+'('+info["SNPlist"][j].id+
+                                '<a href="https://web.expasy.org/variant_pages/'+
+                                info["SNPlist"][j].id+'.html" target="_blank">🡕</a>)'
+            butt_tmp.loc=info["SNPlist"][j].loc;
+
+            butt_tmp.addEventListener("click", function(e) {
+              console.log(e.target.parentElement)
+              // sort out focus +neightbor stuff for 3Dview
+              if(e.target.tagName=="A"){
+                etarg=e.target.parentElement
+              }else{
+                etarg=e.target;
+              }
+              picked=etarg.loc
+              changeProtView(picked, chain)
+
+              /* Toggle between adding and removing the "active" class,
+              to highlight the button that controls the panel */
+              let accI=document.getElementsByClassName("accordionInner");
+              for(let j=0;j<accI.length;j++){
+                accI[j].classList.remove("activeInner")
+              }
+              this.classList.toggle("activeInner");
+
+            });
+            accord.appendChild(butt_tmp)
+          }else{
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInnerDisabled")
+            butt_tmp.id="SNPlist-"+info["SNPlist"][j].loc
+            butt_tmp.innerHTML+=info["SNPlist"][j].orig+
+                                info["SNPlist"][j].loc+info["SNPlist"][j].mut+
+                                " "+'('+info["SNPlist"][j].id+
+                                '<a href="https://web.expasy.org/variant_pages/'+
+                                info["SNPlist"][j].id+'.html" target="_blank">🡕</a>)'
+            butt_tmp.loc=info["SNPlist"][j].loc;
+
+            
+            accord.appendChild(butt_tmp)
+          }
+        }
+        let split_seq=info.uSeq.split("")
+        // binding sites
+        accord=document.getElementById("panel-"+"BSlist");
+        accord.innerHTML=""
+        for(let j=0;j<info["BSlist"].length;j++){
+          if(mapU2P[parseInt(info["BSlist"][j].loc)-1]!=-999){
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInner")
+            butt_tmp.id="BSlist-"+info["BSlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["BSlist"][j].loc)-1]+info["BSlist"][j].loc+
+                                " - "+info["BSlist"][j].description
+            butt_tmp.loc=info["BSlist"][j].loc;
+
+            butt_tmp.addEventListener("click", function(e) {
+              console.log(e.target.parentElement)
+              // sort out focus +neightbor stuff for 3Dview
+              if(e.target.tagName=="A"){
+                etarg=e.target.parentElement
+              }else{
+                etarg=e.target;
+              }
+              picked=etarg.loc
+              changeProtView(picked, chain)
+
+              /* Toggle between adding and removing the "active" class,
+              to highlight the button that controls the panel */
+              let accI=document.getElementsByClassName("accordionInner");
+              for(let j=0;j<accI.length;j++){
+                accI[j].classList.remove("activeInner")
+              }
+              this.classList.toggle("activeInner");
+
+            });
+            accord.appendChild(butt_tmp)
+          }else{
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInnerDisabled")
+            butt_tmp.id="BSlist-"+info["BSlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["BSlist"][j].loc)-1]+info["BSlist"][j].loc+
+                                " - "+info["BSlist"][j].description
+            butt_tmp.loc=info["BSlist"][j].loc;
+
+            
+            accord.appendChild(butt_tmp)
+          }
+        }
+
+        // binding sites
+        accord=document.getElementById("panel-"+"ASlist");
+        accord.innerHTML=""
+        for(let j=0;j<info["ASlist"].length;j++){
+          if(mapU2P[parseInt(info["ASlist"][j].loc)-1]!=-999){
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInner")
+            butt_tmp.id="ASlist-"+info["ASlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["ASlist"][j].loc)-1]+info["ASlist"][j].loc+
+                                " - "+info["ASlist"][j].description
+            butt_tmp.loc=info["ASlist"][j].loc;
+
+            butt_tmp.addEventListener("click", function(e) {
+              console.log(e.target.parentElement)
+              // sort out focus +neightbor stuff for 3Dview
+              if(e.target.tagName=="A"){
+                etarg=e.target.parentElement
+              }else{
+                etarg=e.target;
+              }
+              picked=etarg.loc
+              changeProtView(picked, chain)
+
+              /* Toggle between adding and removing the "active" class,
+              to highlight the button that controls the panel */
+              let accI=document.getElementsByClassName("accordionInner");
+              for(let j=0;j<accI.length;j++){
+                accI[j].classList.remove("activeInner")
+              }
+              this.classList.toggle("activeInner");
+
+            });
+            accord.appendChild(butt_tmp)
+          }else{
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInnerDisabled")
+            butt_tmp.id="ASlist-"+info["ASlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["ASlist"][j].loc)-1]+info["ASlist"][j].loc+
+                                " - "+info["ASlist"][j].description
+            butt_tmp.loc=info["ASlist"][j].loc;
+
+            
+            accord.appendChild(butt_tmp)
+          }
+        }
+
+        // binding sites
+        accord=document.getElementById("panel-"+"MBSlist");
+        accord.innerHTML=""
+        for(let j=0;j<info["MBSlist"].length;j++){
+          if(mapU2P[parseInt(info["MBSlist"][j].loc)-1]!=-999){
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInner")
+            butt_tmp.id="MBSlist-"+info["MBSlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["MBSlist"][j].loc)-1]+info["MBSlist"][j].loc+
+                                " - "+info["MBSlist"][j].description
+            butt_tmp.loc=info["MBSlist"][j].loc;
+
+            butt_tmp.addEventListener("click", function(e) {
+              console.log(e.target.parentElement)
+              // sort out focus +neightbor stuff for 3Dview
+              if(e.target.tagName=="A"){
+                etarg=e.target.parentElement
+              }else{
+                etarg=e.target;
+              }
+              picked=etarg.loc
+              changeProtView(picked, chain)
+
+              /* Toggle between adding and removing the "active" class,
+              to highlight the button that controls the panel */
+              let accI=document.getElementsByClassName("accordionInner");
+              for(let j=0;j<accI.length;j++){
+                accI[j].classList.remove("activeInner")
+              }
+              this.classList.toggle("activeInner");
+
+            });
+            accord.appendChild(butt_tmp)
+          }else{
+            butt_tmp=document.createElement("button");
+            
+            butt_tmp.classList.add("accordionInnerDisabled")
+            butt_tmp.id="MBSlist-"+info["MBSlist"][j].loc
+            butt_tmp.innerHTML+=split_seq[parseInt(info["MBSlist"][j].loc)-1]+info["MBSlist"][j].loc+
+                                " - "+info["MBSlist"][j].description
+            butt_tmp.loc=info["MBSlist"][j].loc;
+
+            
+            accord.appendChild(butt_tmp)
+          }
+        }
+        // 
+      }
+      
+      document.getElementById("uniprotButton").addEventListener("click", function(){
+        let uniInput=document.getElementById("uniprotInput");
+        let uniText=uniInput.value
+        uniacc=uniText.trim()
+        uniprotSubmit(uniacc);
+      })
+
+      document.getElementById("pdblistdrop").addEventListener("change", function(e){
+        document.getElementById("loadSpin").style.display="block"
+        if(mode=="rcsb"){
+          pdbid=e.target.value.split("_")[0];
+          chain=e.target.value.split("_")[1];
+        }else if(mode=="SMR"){
+          pdbid=e.target.value;
+          chain="A";
+        }
+
+        
+        
+        if(info.pdblist.length>0){
+          getPDB(pdbid).then(function(){  
+            loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+          });
+        }
+        
+      })
+
+      document.getElementById("residInput").addEventListener("change", function(e){
+        let residInput=e.target
+        let residText=residInput.value.trim()
+        console.log(residText)
+        let residtmp=mapU2P[parseInt(residText)-1];
+        let parEl=residInput.parentElement
+        console.log(parEl)
+        if(residtmp !=-999){
+          parEl.classList.remove("is-invalid");
+          console.log(residtmp)
+        }else{
+          parEl.classList.add("is-invalid");
+          console.log(residtmp)
+        }
+      })
+
+      document.getElementById("residButton").addEventListener("click", function(){
+        let residInput=document.getElementById("residInput");
+        
+        let residText=residInput.value.trim()
+        if(residText!=""){
+          let residtmp=mapU2P[parseInt(residText)-1];
+          if(residtmp !=-999){
+            picked=residText;
+            changeProtView(picked, chain);
+          }else{
+            console.log("not in PDB")
+            
+          }
+        }
+        
+        
+      })
+
+      document.getElementById("neighborRadiiInput").addEventListener("input", function(e){
+        radii=parseFloat(e.target.value)
+        if(picked in pdbinfo[chain].nums){
+          
+          changeProtView(picked, chain);
+        }else{
+          console.log("not in PDB")
+        }
+      })
+      
+        
+      //// Accordion stuff
+      var acc = document.getElementsByClassName("accordion");
+      
+
+      for (let i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function() {
+          /* Toggle between adding and removing the "active" class,
+          to highlight the button that controls the panel */
+          this.classList.toggle("active");
+
+          /* Toggle between hiding and showing the active panel */
+          var panel = this.nextElementSibling;
+          if (panel.style.display === "block") {
+            panel.style.display = "none";
+          } else {
+            panel.style.display = "block";
+          }
+        });
+      } 
+
+      var accInner = document.getElementsByClassName("accordionInner");
+      
+
+      for (let i = 0; i < accInner.length; i++) {
+        accInner[i].addEventListener("click", function() {
+          /* Toggle between adding and removing the "active" class,
+          to highlight the button that controls the panel */
+          let accI=document.getElementsByClassName("accordionInner");
+          for(let j=0;j<accI.length;j++){
+            accI[j].classList.remove("activeInner")
+          }
+          this.classList.toggle("activeInner");
+
+        });
+      } 
+
+
+      ///UI controls
+
+      document.getElementById("fognear").addEventListener("input", function(e){
+        stageState.fognear=e.target.value;
+        stage.setParameters({fogNear:stageState.fognear});
+      })
+
+      document.getElementById("fogfar").addEventListener("input", function(e){
+        stageState.fogfar=e.target.value;
+        stage.setParameters({fogFar:stageState.fogfar});
+      })
+
+      document.getElementById("clipdist").addEventListener("input", function(e){
+        stageState.clipdist=e.target.value;
+        stage.setParameters({clipDist:stageState.clipdist});
+      })
+
+      document.getElementById("clipnear").addEventListener("input", function(e){
+        stageState.clipnear=e.target.value;
+        stage.setParameters({clipNear:stageState.clipnear});
+      })
+
+      document.getElementById("clipfar").addEventListener("input", function(e){
+        stageState.clipfar=e.target.value;
+        stage.setParameters({clipFar:stageState.clipfar});
+      })
+
+      document.getElementById("uniformColor").addEventListener("input", function(e){
+        let choice = document.getElementById("backcolor").value;
+        colors.uniform=choice
+        if(choice=="uniform"){
+          backbone.color=e.target.value;
+          mainBackboneRepTrace.setParameters({color:backbone.color})
+          mainBackboneRepCartoon.setParameters({color:backbone.color})
+          mainBackboneRepTube.setParameters({color:backbone.color})
+        }
+      })
+
+      document.getElementById("backgroundColor").addEventListener("input", function(e){
+        let choice = e.target.value;
+        console.log(choice)
+        colors.bkground=choice;
+        stage.setParameters({backgroundColor:choice});
+      })
+
+      document.getElementById("labelColor").addEventListener("input", function(e){
+        let choice = e.target.value;
+        colors.label=choice;
+        console.log(choice);
+        pickedLabelRep.setParameters({color:choice});
+        neighborLabelRep.setParameters({color:choice});
+      })
+
+      document.getElementById("backcolor").addEventListener("input", function(e){
+        
+        backbone.color=e.target.value;
+        colors.uniform=document.getElementById("uniformColor").value;
+        if(backbone.color=="uniform"){
+          backbone.color=document.getElementById("uniformColor").value
+        }
+        mainBackboneRepTrace.setParameters({color:backbone.color})
+        mainBackboneRepCartoon.setParameters({color:backbone.color})
+        mainBackboneRepTube.setParameters({color:backbone.color})
+        
+      })
+
+      document.getElementById("screenshot").addEventListener("click",function() {
+          stage.makeImage({
+            factor: 2,
+            antialias: true,
+            trim: false,
+            transparent: true
+          }).then(function (blob) {
+                    //stage.setParameters({backgroundColor: "white"})
+            NGL.download(blob, 'screenshot.png')
+          })
+        })
+
+      document.getElementById("backtracetype").addEventListener("change", function(e){
+        backbone.rep=e.target.value;
+        if(bckbnchecked){
+          if(backbone.rep=="trace"){
+            mainBackboneRepTrace.setVisibility(true)
+            mainBackboneRepCartoon.setVisibility(false)
+            restBackboneRepTrace.setVisibility(true)
+            restBackboneRepCartoon.setVisibility(false)
+            mainBackboneRepTube.setVisibility(false)
+            restBackboneRepTube.setVisibility(false)
+          }else if(backbone.rep=="cartoon"){
+            mainBackboneRepTrace.setVisibility(false)
+            mainBackboneRepCartoon.setVisibility(true)
+            restBackboneRepTrace.setVisibility(false)
+            restBackboneRepCartoon.setVisibility(true)
+            mainBackboneRepTube.setVisibility(false)
+            restBackboneRepTube.setVisibility(false)
+          }else if(backbone.rep=="tube"){
+            mainBackboneRepTrace.setVisibility(false)
+            mainBackboneRepCartoon.setVisibility(false)
+            restBackboneRepTrace.setVisibility(false)
+            restBackboneRepCartoon.setVisibility(false)
+            mainBackboneRepTube.setVisibility(true)
+            restBackboneRepTube.setVisibility(true)
+          }
+        }else{
+          mainBackboneRepTrace.setVisibility(false)
+          mainBackboneRepCartoon.setVisibility(false)
+          restBackboneRepTrace.setVisibility(false)
+          restBackboneRepCartoon.setVisibility(false)
+          mainBackboneRepTube.setVisibility(false)
+          restBackboneRepTube.setVisibility(false)
+        }
+        
+      })
+
+      var ASchecked=true
+      var ASchk=document.getElementById("chk-AS");
+
+      ASchk.addEventListener("change", function(){
+        ASchecked=!ASchecked;
+        asRep.setVisibility(ASchecked);
+        ASchk.checked=ASchecked
+      })
+
+      var BSchecked=true
+      var BSchk=document.getElementById("chk-BS");
+
+      BSchk.addEventListener("change", function(){
+        BSchecked=!BSchecked;
+        bsRep.setVisibility(BSchecked);
+        BSchk.checked=BSchecked
+      })
+
+      var MBSchecked=true
+      var MBSchk=document.getElementById("chk-MBS");
+
+      MBSchk.addEventListener("change", function(){
+        MBSchecked=!MBSchecked;
+        mbsRep.setVisibility(MBSchecked);
+        MBSchk.checked=MBSchecked
+      })
+
+      var SNPchecked=true
+      var SNPchk=document.getElementById("chk-SNP");
+
+      SNPchk.addEventListener("change", function(){
+        SNPchecked=!SNPchecked;
+        mutRep.setVisibility(SNPchecked);
+        SNPchk.checked=SNPchecked
+      })
+
+      var waterchecked=true
+      var waterchk=document.getElementById("chk-Water");
+
+      waterchk.addEventListener("change", function(){
+        waterchecked=!waterchecked;
+        waterRep.setVisibility(waterchecked);
+        waterchk.checked=waterchecked
+      })
+
+      var ligchecked=true
+      var ligchk=document.getElementById("chk-Lig");
+
+      ligchk.addEventListener("change", function(){
+        ligchecked=!ligchecked;
+        ligandRep.setVisibility(ligchecked);
+        ligchk.checked=ligchecked
+      })
+
+      var ionchecked=true
+      var ionchk=document.getElementById("chk-ion");
+
+      ionchk.addEventListener("change", function(){
+        ionchecked=!ionchecked;
+        ionRep.setVisibility(ionchecked);
+        ionchk.checked=ionchecked
+      })
+
+      var dnachecked=true
+      var dnachk=document.getElementById("chk-dna");
+
+      dnachk.addEventListener("change", function(){
+        dnachecked=!dnachecked;
+        dnaRep.setVisibility(dnachecked);
+        dnachk.checked=dnachecked
+      })
+
+      var nlblchecked=true
+      var nlblchk=document.getElementById("chk-nlbl");
+
+      nlblchk.addEventListener("change", function(){
+        nlblchecked=!nlblchecked;
+        neighborLabelRep.setVisibility(nlblchecked);
+        nlblchk.checked=nlblchecked
+
+      })
+
+      var nchecked=true
+      var nchk=document.getElementById("chk-n");
+
+      nchk.addEventListener("change", function(){
+        nchecked=!nchecked;
+        neighborRep.setVisibility(nchecked);
+        nchk.checked=nchecked
+        if(nchecked){
+          nlblchecked=false;
+          neighborLabelRep.setVisibility(nlblchecked);
+          nlblchk.checked=nlblchecked
+          nlblchecked.disabled=true
+        }else{
+          nlblchecked.disabled=false
+        }
+        
+      })
+
+      var plblchecked=true
+      var plblchk=document.getElementById("chk-plbl");
+
+      plblchk.addEventListener("change", function(){
+        plblchecked=!plblchecked;
+        pickedLabelRep.setVisibility(plblchecked);
+        plblchk.checked=plblchecked
+      })
+
+      var bckbnchecked=true
+      var bckbnchk=document.getElementById("chk-bckbn");
+
+      bckbnchk.addEventListener("change", function(){
+        bckbnchecked=!bckbnchecked;
+        if(bckbnchecked){
+          if(backbone.rep=="trace"){
+            mainBackboneRepTrace.setVisibility(true)
+            mainBackboneRepCartoon.setVisibility(false)
+            restBackboneRepTrace.setVisibility(true)
+            restBackboneRepCartoon.setVisibility(false)
+            mainBackboneRepTube.setVisibility(false)
+            restBackboneRepTube.setVisibility(false)
+          }else if(backbone.rep=="cartoon"){
+            mainBackboneRepTrace.setVisibility(false)
+            mainBackboneRepCartoon.setVisibility(true)
+            restBackboneRepTrace.setVisibility(false)
+            restBackboneRepCartoon.setVisibility(true)
+            mainBackboneRepTube.setVisibility(false)
+            restBackboneRepTube.setVisibility(false)
+          }else if(backbone.rep=="tube"){
+            mainBackboneRepTrace.setVisibility(false)
+            mainBackboneRepCartoon.setVisibility(false)
+            restBackboneRepTrace.setVisibility(false)
+            restBackboneRepCartoon.setVisibility(false)
+            mainBackboneRepTube.setVisibility(true)
+            restBackboneRepTube.setVisibility(true)
+          }
+        }else{
+          mainBackboneRepTrace.setVisibility(false)
+          mainBackboneRepCartoon.setVisibility(false)
+          restBackboneRepTrace.setVisibility(false)
+          restBackboneRepCartoon.setVisibility(false)
+          mainBackboneRepTube.setVisibility(false)
+          restBackboneRepTube.setVisibility(false)
+        }
+        bckbnchk.checked=bckbnchecked
+      })
+
+
+      
+
+      var wkhbchecked=true
+      var whbchecked=true
+      var bhbchecked=true
+      var hpchecked=true
+      var hbchecked=true
+      var mcchecked=true
+      var halbchecked=true
+      var sbchecked=true
+      var cpchecked=true
+      var pschecked=true
+      var wkhbchk=document.getElementById("chk-wkhb");
+
+      wkhbchk.addEventListener("change", function(){
+        wkhbchecked=!wkhbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        wkhbchk.checked=wkhbchecked
+      })
+
+      
+
+
+      var whbchk=document.getElementById("chk-whb");
+
+      whbchk.addEventListener("change", function(){
+        whbchecked=!whbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        whbchk.checked=whbchecked
+      })
+
+
+      var bhbchk=document.getElementById("chk-bhb");
+
+      bhbchk.addEventListener("change", function(){
+        bhbchecked=!bhbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        bhbchk.checked=bhbchecked
+      })
+
+
+      var hpchk=document.getElementById("chk-hp");
+
+      hpchk.addEventListener("change", function(){
+        hpchecked=!hpchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        hpchk.checked=hpchecked
+      })
+
+
+      var hbchk=document.getElementById("chk-hb");
+
+      hbchk.addEventListener("change", function(){
+        hbchecked=!hbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        hbchk.checked=hbchecked
+      })
+
+
+      var mcchk=document.getElementById("chk-mc");
+
+      mcchk.addEventListener("change", function(){
+        mcchecked=!mcchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        mcchk.checked=mcchecked
+      })
+
+
+      var halbchk=document.getElementById("chk-halb");
+
+      halbchk.addEventListener("change", function(){
+        halbchecked=!halbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        halbchk.checked=halbchecked
+      })
+
+
+      var sbchk=document.getElementById("chk-sb");
+
+      sbchk.addEventListener("change", function(){
+        sbchecked=!sbchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        sbchk.checked=sbchecked
+      })
+
+
+      var cpchk=document.getElementById("chk-cp");
+
+      cpchk.addEventListener("change", function(){
+        cpchecked=!cpchecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        cpchk.checked=cpchecked
+      })
+
+
+      var pschk=document.getElementById("chk-ps");
+
+      pschk.addEventListener("change", function(){
+        pschecked=!pschecked;
+        contactRep.setParameters(
+          {
+            weakHydrogenBond: wkhbchecked,
+            waterHydrogenBond: whbchecked,
+            backboneHydrogenBond: bhbchecked,
+            hydrophobic:hpchecked,
+            hydrogenBond: hbchecked,
+            metalCoordination:mcchecked,
+            halogenBond:halbchecked,
+            ionicInteraction: sbchecked,
+            cationPi: cpchecked,
+            piStacking: pschecked
+          }
+          );
+        pschk.checked=pschecked
+      })
+
+      // download menu
+
+      var downloadMenuUP=document.getElementById("uniEntryPage")
+
+      downloadMenuUP.addEventListener("click", function(){
+        window.open("https://www.uniprot.org/uniprot/"+uniacc);
+      })
+
+    </script>
+  </body>
+</html>
+
