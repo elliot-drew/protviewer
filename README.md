@@ -12,7 +12,12 @@ More to be added, any suggestions welcomed.
 Currently only available as a Windows 10 electron based executable. OSX and Linux versions to come. A web based version will be available once I bother to sort out web hosting.
 
 # Acknowledgements
+
+If you use this for anything, please cite these libraries/software.
+
 3D protein visualisation using NGLviewer (https://github.com/nglviewer/ngl)
+
 Sequence manipulation suite (https://www.bioinformatics.org/sms2/)
+
 xml-js (https://github.com/nashwaan/xml-js)
 
