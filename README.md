@@ -7,9 +7,9 @@ A variety of annotations can be displayed, more to be added.
 
 Large degree of control over the viewer, including representations, colors, showing contacts etc.
 
-More to be added, any suggestions welcomed.
+More to be added.
 
-Currently only available as a Windows 10 electron based executable. OSX and Linux versions to come. A web based version will be available once I bother to sort out web hosting.
+Currently being written as an electron app. A web based version will probably be available once I bother to sort out web hosting.
 
 # Acknowledgements
 
