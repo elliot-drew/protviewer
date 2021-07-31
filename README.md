@@ -1,7 +1,9 @@
 # protviewer - Work in progress
 3D protein visualisation for exploration of Uniprot annotations on PDB and SwissModel protein structures.
 
-Idea is to create an easy and fast way for students to explore sequence annotations in a structural context. Search for a gene with a UniProt accession code, then select either an experimental structure from the PDB or a homology model from the SWISS-MODEL respository if available.
+Idea is to create an easy and fast way for students to explore sequence annotations in a structural context. Search for a gene with a UniProt accession code, then select an experimental structure from the PDB.
+
+### New! - will now fetch a model from the new Alphafold Database!
 
 ![image](https://user-images.githubusercontent.com/25435513/125088953-d31cef00-e0c5-11eb-98c7-732edea32a11.png)
 
@@ -9,13 +11,9 @@ A variety of annotations can be displayed, more to be added.
 
 Large degree of control over the viewer, including representations, colors, showing contacts within a range of a selected residue etc.
 
-More to be added. Good amount of errors and issues.
+More to be added. 
 
-Currently being written as an electron app. A web based version will probably be available once I bother to sort out web hosting.
-
-# If you want to run it...
-
-You will need Node.js and npm installed. In the folder you download all the files to, open a terminal and type "npm start" - this will hopefully start up the app.
+Web based version is available [here](https://elliot-drew.github.io/protviewer/). Also being developed as an electron app, but executables not yet available - feel free to make your own.
 
 If you have problems feel free to get in contact, although I can't guarantee I'll be able to respond/help in any reasonable amount of time.
 
