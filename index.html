@@ -2,7 +2,11 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Protviewer</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="stylesheet" href="./src/css/material.min.css">
     <script src="./src/css/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -18,13 +22,14 @@
       .sidenav {
         height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
         width: 20%; /* Set the width of the sidebar */
+        min-width: 150px;
         position: fixed; /* Fixed Sidebar (stay in place on scroll) */
         z-index: 1; /* Stay on top */
         top: 55px; /* Stay at the top */
         
         left: 0;
         overflow-x: hidden; /* Disable horizontal scroll */
-        padding: 5px 0 5px 0;
+        padding: 5px 5px 5px 5px;
         background-color: white;
         /* border-right: solid rgb(133, 162, 185) 2px;  */
         box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 20%), 0 1px 5px 0 rgb(0 0 0 / 12%);
@@ -32,6 +37,7 @@
       .sideControl {
         height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
         width: 20%; /* Set the width of the sidebar */
+        min-width: 150px;
         position: fixed; /* Fixed Sidebar (stay in place on scroll) */
         z-index: 1; /* Stay on top */
         top: 55px; /* Stay at the top */
@@ -129,6 +135,36 @@
         height:100px;
         margin: -50px 0 0 -50px;
       }
+
+      .elliot-slider-table{
+        font-size:x-small;
+      }
+      
+      .elliot-header-button{
+        margin-left:10px;
+        margin-right:30px;
+      }
+
+      #nameSpan {
+        font-size: small;
+        font-style: italic;
+      }
+
+      .mdl-layout__header-row {
+        padding-left:20px;
+      }
+
+      .elliot-header-logo {
+        width:50px;
+        height:auto;
+        border-radius:25%;
+        margin-right:20px
+      }
+      
+      .elliot-header-text {
+        margin-right:10px
+      }
+
     </style>
   </head>
   <body>
@@ -139,17 +175,21 @@
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           
-          
-
+          <img class="elliot-header-logo" src="android-chrome-192x192.png">
+          <h6 class="elliot-header-text">Enter UniProt acc:</h6>
           <form action="#">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <input class="mdl-textfield__input" type="text" id="uniprotInput" value="P20062">
-              <label class="mdl-textfield__label" for="uniprotInput">UniProt Acc...</label>
+              <input class="mdl-textfield__input" type="text" id="uniprotInput" value="">
+              
             </div>
             <button class="mdl-button mdl-js-button mdl-button--icon" id="uniprotButton">
               <i class="material-icons">search</i>
             </button>
           </form>
+          
+          <button id="exampleButton" class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent elliot-header-button">
+            Run example
+          </button>
 
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <select class="mdl-textfield__input" id="pdblistdrop" name="pdblistdrop" value="">
@@ -168,8 +208,8 @@
           <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
               for="downloadMenu">
             <li id="uniEntryPage" class="mdl-menu__item ">Uniprot entry page</li>
-            <li id="strucEntryPage" class="mdl-menu__item mdl-menu__item--full-bleed-divider">Structure entry page</li>
-            <li id="strucEntryDownload" class="mdl-menu__item">Structure download</li>
+            <li id="strucEntryPage" class="mdl-menu__item ">Structure entry page</li>
+            
           </ul>
 
           <button id="screenshot"
@@ -182,7 +222,9 @@
       <main class="mdl-layout__content">
         <div class="sidenav">
           <br>
-        
+          <div id="nameSpan">
+
+          </div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:70%">
             <input class="mdl-textfield__input" type="number" id="residInput" value="">
             <label class="mdl-textfield__label" for="residInput">UniProt res. number</label>
@@ -254,12 +296,54 @@
             <label class="mdl-textfield__label" for="labelColor">Label Color</label>  
           </div>  
           <hr>
-          <input class="mdl-slider mdl-js-slider" id="fognear" type="range" min="0" max="100" value="50" tabindex="0">
-          <input class="mdl-slider mdl-js-slider" id="fogfar" type="range" min="0" max="100" value="100" tabindex="0">
+          <table class="elliot-slider-table">
+            <tr>
+              <td>
+                Fog Near
+              </td>
+              <td>
+                <input class="mdl-slider mdl-js-slider" id="fognear" type="range" min="0" max="100" value="50" tabindex="0">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Fog Far
+              </td>
+              <td>
+                <input class="mdl-slider mdl-js-slider" id="fogfar" type="range" min="0" max="100" value="100" tabindex="0">
+              </td>
+            </tr>
+          </table>
+          
+          
           <hr>
-          <input class="mdl-slider mdl-js-slider" id="clipdist" type="range" min="0" max="100" value="10" tabindex="0">
-          <input class="mdl-slider mdl-js-slider" id="clipnear" type="range" min="0" max="100" value="0" tabindex="0">
-          <input class="mdl-slider mdl-js-slider" id="clipfar" type="range" min="0" max="100" value="100" tabindex="0">
+          <table class="elliot-slider-table">
+            <tr>
+              <td>
+                Clip Dist.
+              </td>
+              <td>
+                <input class="mdl-slider mdl-js-slider" id="clipdist" type="range" min="0" max="100" value="10" tabindex="0">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Clip Near
+              </td>
+              <td>
+                <input class="mdl-slider mdl-js-slider" id="clipnear" type="range" min="0" max="100" value="0" tabindex="0">
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Clip Far
+              </td>
+              <td>
+                <input class="mdl-slider mdl-js-slider" id="clipfar" type="range" min="0" max="100" value="100" tabindex="0">
+              </td>
+            </tr>
+          </table>
+          
           <hr>
           <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-AS">
             <input type="checkbox" id="chk-AS" class="mdl-checkbox__input" checked>
@@ -365,6 +449,7 @@
 
 
       var stage;
+      var uniName;
       var uniObj={};
       var info={
         "pdblist":[],
@@ -602,7 +687,7 @@
         
         stage.removeAllComponents()
         var url;
-        if(mode=="rcsb"){
+        /* if(mode=="rcsb"){
           url = "rcsb://" + pdbid + ".mmtf";
           return stage.loadFile(url).then(function (o) {
             repOnLoad(o);
@@ -616,8 +701,15 @@
           }).then(function (o) {
             repOnLoad(o)
           });
-        }
+        } */
+        stringBlob = new Blob( [ smrText ], { type: 'text/plain'} );
         
+        stage.loadFile(stringBlob, { 
+            ext: "pdb",
+            name: pdbid+"_"+chain
+        }).then(function (o) {
+          repOnLoad(o)
+        });
         
       }
 
@@ -682,6 +774,7 @@
           }
           mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
           //return(pdbinfo);
+          return(pdb)
         } else {
           alert("HTTP-Error: " + response.status);
         }
@@ -736,6 +829,66 @@
           text+='<option style="color:black" selected>'+"SMR_"+uniacc+'</option>\n'
           
           dropList.innerHTML=text;
+
+          return(pdb);
+        } else {
+          return("failed")
+        }
+        
+        
+      }
+
+      async function getAF(uniacc){
+        
+        let response = await fetch('https://alphafold.ebi.ac.uk/files/AF-'+uniacc+'-F1-model_v1.pdb');
+
+        if (response.ok) { // if HTTP-status is 200-299
+          // get the response body (the method explained below)
+          let pdb = await response.text();
+          
+          // now we get for each chain the sequence and the residue numbers
+          pdbinfo={};
+          pdbtext=pdb.split("\n");
+          let resnum_old=9999999999999;
+          for(let i=0;i<pdbtext.length;i++){
+            if(pdbtext[i].startsWith("ATOM")){
+              let line=pdbtext[i].split("");
+              let ch=line.slice(21,22)
+              let resn=line.slice(17,20).join("").trim()
+              let resnum=line.slice(22,26).join("").trim()
+              if(resnum!=resnum_old){
+                if(!(ch in pdbinfo)){
+                  pdbinfo[ch]={
+                    "seq":[],
+                    "nums":[]
+                  };
+                }
+                if(resn in aa_3to1){
+                  resn_tmp=aa_3to1[resn];
+                }else{
+                  resn_tmp="X";
+                }
+                pdbinfo[ch].seq.push(resn_tmp); // one letter code
+                pdbinfo[ch].nums.push(resnum);
+                resnum_old=resnum;
+              }
+            }
+          }
+          mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
+          
+          
+          pdbid="AF_"+uniacc
+          chain="A" // assumption
+          if(info.pdblist.length==0){
+            info.pdblist=["AF_"+uniacc]
+            let dropList=document.getElementById("pdblistdrop");
+            let text=""
+            
+            text+='<option style="color:black" selected>'+"AF_"+uniacc+'</option>\n'
+            
+            dropList.innerHTML=text;
+          }
+          
 
           return(pdb);
         } else {
@@ -803,8 +956,18 @@
         let ASList=[];
         let MBSList=[];
         let seq="";
-
+        let name="";
         for(i=0;i<uo.length;i++){
+          // uniacc name
+          if(uo[i].name=="protein"){
+            try{
+              name=uo[i].elements[0].elements[0].elements[0].text;
+            }catch{
+              name=""
+            }
+            
+            
+          }
           // PDB NAMES
           if(uo[i].name=="dbReference"){
             if("attributes" in uo[i]){
@@ -894,18 +1057,33 @@
           "BSlist":BSList,
           "MBSlist":MBSList,
           "ASlist":ASList,
+          "name":name,
         }
         return(info)
       }
 
       function uniprotSubmit(acc){
         document.getElementById("loadSpin").style.display="block"
-        getUniProt2(acc).then(function(){
+        
+        getUniProt2(acc).then(async function(){
           console.log(uniObj)
           info=getInfo(uniObj);
           console.log(info)
+
+          document.getElementById("nameSpan").innerHTML=info.name
+
+          let responseAF = await fetch('https://alphafold.ebi.ac.uk/files/AF-'+acc+'-F1-model_v1.pdb');
+          
+          afFlag=false;
+          if(responseAF.ok){
+            afFlag=true;
+          }
+
           if(info.pdblist.length>0){
             // update drop box
+            if(afFlag){
+              info.pdblist.push("AF_"+acc)
+            }
             let dropList=document.getElementById("pdblistdrop");
             let text=""
             for(let i=0;i<info.pdblist.length;i++){
@@ -916,6 +1094,8 @@
                 text+='<option style="color:black">'+info.pdblist[i]+'</option>\n'
               }
             }
+
+            
             
             dropList.innerHTML=text;
             //createUniInfo();
@@ -923,12 +1103,19 @@
             pdbid=info.pdblist[0].split("_")[0]
             chain=info.pdblist[0].split("_")[1]
             mode="rcsb";
-            getPDB(pdbid).then(function(){  
-              loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+            getPDB(pdbid).then(function(text){  
+              pdbtext=text;
+              if(pdbtext=="failed"){
+                console.log("NO PDBID MATCH")
+                
+              }else{
+                mode="rcsb";
+                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+              }
             });
             
           }else{
-            getSMR(acc).then(function(text){
+            getAF(acc).then(function(text){
               pdbtext=text;
               if(pdbtext=="failed"){
                 console.log("NO PDBID MATCH")
@@ -1216,31 +1403,64 @@
         }
         // 
       }
+
+      document.getElementById("uniprotInput").value="";
       
       document.getElementById("uniprotButton").addEventListener("click", function(){
-        let uniInput=document.getElementById("uniprotInput");
+        
         let uniText=uniInput.value
         uniacc=uniText.trim()
         uniprotSubmit(uniacc);
       })
 
+      document.getElementById("exampleButton").addEventListener("click", function(){
+        uniacc="Q9BYF1"
+        let uniInput=document.getElementById("uniprotInput");
+        uniInput.value=uniacc;
+        uniprotSubmit(uniacc);
+      })
+
       document.getElementById("pdblistdrop").addEventListener("change", function(e){
         document.getElementById("loadSpin").style.display="block"
-        if(mode=="rcsb"){
+        
+        if(e.target.value.startsWith("AF_")){
+          mode="SMR"
+          pdbid=e.target.value;
+          acc=pdbid.split("_")[1]
+          chain="A";
+          getAF(acc).then(function(text){
+              pdbtext=text;
+              if(pdbtext=="failed"){
+                console.log("NO PDBID MATCH")
+                
+              }else{
+                
+                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+              }
+            });
+        }else{
+          mode="rcsb";
           pdbid=e.target.value.split("_")[0];
           chain=e.target.value.split("_")[1];
-        }else if(mode=="SMR"){
-          pdbid=e.target.value;
-          chain="A";
+          getPDB(pdbid).then(function(text){  
+              pdbtext=text;
+              if(pdbtext=="failed"){
+                console.log("NO PDBID MATCH")
+                
+              }else{
+                
+                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+              }
+            });
         }
+        
+        
 
         
         
-        if(info.pdblist.length>0){
-          getPDB(pdbid).then(function(){  
-            loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
-          });
-        }
+        
+          
+        
         
       })
 
@@ -1827,8 +2047,29 @@
       var downloadMenuUP=document.getElementById("uniEntryPage")
 
       downloadMenuUP.addEventListener("click", function(){
-        window.open("https://www.uniprot.org/uniprot/"+uniacc);
+        if(typeof pdbid === 'undefined'){
+          console.log("no uniacc selected")
+        }else{
+          window.open("https://www.uniprot.org/uniprot/"+uniacc);
+        }
+        
       })
+
+      var downloadMenuStruc=document.getElementById("strucEntryPage")
+
+      downloadMenuStruc.addEventListener("click", function(){
+        if(typeof pdbid === 'undefined'){
+          console.log("no pdb selected")
+        }else if(pdbid.startsWith("AF_")){
+          window.open("https://alphafold.ebi.ac.uk/entry/"+uniacc);
+        }else{
+          window.open("https://www.rcsb.org/structure/"+pdbid);
+          
+        }
+        
+      })
+
+      
 
     </script>
   </body>

@@ -3,22 +3,21 @@
   <head>
     <meta charset="UTF-8">
     <title>Hello World!</title>
-    <link rel="stylesheet" href="./src/css/material.min.css">
-    <script src="./src/css/material.min.js"></script>
+    <link rel="stylesheet" href="./css/material.min.css">
+    <script src="./css/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="./src/js/ngl.js"></script>
-    <script src="./src/js/xml-js.min.js"></script>
-    <link rel="stylesheet" href="./src/css/getmdl-select.min.css">
-    <script src="./src/js/getmdl-select.min.js"></script>
-    <script src="./src/js/pairwise_align_protein.js"></script>
-    <script src="./src/js/align_pair_linear.js"></script>
-    <script src="./src/js/align_pair_quad.js"></script>
-    <script src="./src/js/sms_common.js"></script>
+    <script src="./js/ngl.js"></script>
+    <script src="./js/xml-js.min.js"></script>
+    <link rel="stylesheet" href="./css/getmdl-select.min.css">
+    <script src="./js/getmdl-select.min.js"></script>
+    <script src="./js/pairwise_align_protein.js"></script>
+    <script src="./js/align_pair_linear.js"></script>
+    <script src="./js/align_pair_quad.js"></script>
+    <script src="./js/sms_common.js"></script>
     <style>
       .sidenav {
         height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
         width: 20%; /* Set the width of the sidebar */
-        min-width: 150px;
         position: fixed; /* Fixed Sidebar (stay in place on scroll) */
         z-index: 1; /* Stay on top */
         top: 55px; /* Stay at the top */
@@ -33,7 +32,6 @@
       .sideControl {
         height: calc(100% - 60px); /* Full-height: remove this if you want "auto" height */
         width: 20%; /* Set the width of the sidebar */
-        min-width: 150px;
         position: fixed; /* Fixed Sidebar (stay in place on scroll) */
         z-index: 1; /* Stay on top */
         top: 55px; /* Stay at the top */
@@ -130,10 +128,6 @@
         width:100px;
         height:100px;
         margin: -50px 0 0 -50px;
-      }
-
-      .elliot-slider-table{
-        font-size:x-small;
       }
     </style>
   </head>
@@ -260,54 +254,12 @@
             <label class="mdl-textfield__label" for="labelColor">Label Color</label>  
           </div>  
           <hr>
-          <table class="elliot-slider-table">
-            <tr>
-              <td>
-                Fog Near
-              </td>
-              <td>
-                <input class="mdl-slider mdl-js-slider" id="fognear" type="range" min="0" max="100" value="50" tabindex="0">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Fog Far
-              </td>
-              <td>
-                <input class="mdl-slider mdl-js-slider" id="fogfar" type="range" min="0" max="100" value="100" tabindex="0">
-              </td>
-            </tr>
-          </table>
-          
-          
+          <input class="mdl-slider mdl-js-slider" id="fognear" type="range" min="0" max="100" value="50" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="fogfar" type="range" min="0" max="100" value="100" tabindex="0">
           <hr>
-          <table class="elliot-slider-table">
-            <tr>
-              <td>
-                Clip Dist.
-              </td>
-              <td>
-                <input class="mdl-slider mdl-js-slider" id="clipdist" type="range" min="0" max="100" value="10" tabindex="0">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Clip Near
-              </td>
-              <td>
-                <input class="mdl-slider mdl-js-slider" id="clipnear" type="range" min="0" max="100" value="0" tabindex="0">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                Clip Far
-              </td>
-              <td>
-                <input class="mdl-slider mdl-js-slider" id="clipfar" type="range" min="0" max="100" value="100" tabindex="0">
-              </td>
-            </tr>
-          </table>
-          
+          <input class="mdl-slider mdl-js-slider" id="clipdist" type="range" min="0" max="100" value="10" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="clipnear" type="range" min="0" max="100" value="0" tabindex="0">
+          <input class="mdl-slider mdl-js-slider" id="clipfar" type="range" min="0" max="100" value="100" tabindex="0">
           <hr>
           <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-AS">
             <input type="checkbox" id="chk-AS" class="mdl-checkbox__input" checked>
@@ -650,7 +602,7 @@
         
         stage.removeAllComponents()
         var url;
-        /* if(mode=="rcsb"){
+        if(mode=="rcsb"){
           url = "rcsb://" + pdbid + ".mmtf";
           return stage.loadFile(url).then(function (o) {
             repOnLoad(o);
@@ -664,15 +616,8 @@
           }).then(function (o) {
             repOnLoad(o)
           });
-        } */
-        stringBlob = new Blob( [ smrText ], { type: 'text/plain'} );
+        }
         
-        stage.loadFile(stringBlob, { 
-            ext: "pdb",
-            name: pdbid+"_"+chain
-        }).then(function (o) {
-          repOnLoad(o)
-        });
         
       }
 
@@ -737,7 +682,6 @@
           }
           mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
           //return(pdbinfo);
-          return(pdb)
         } else {
           alert("HTTP-Error: " + response.status);
         }
@@ -792,66 +736,6 @@
           text+='<option style="color:black" selected>'+"SMR_"+uniacc+'</option>\n'
           
           dropList.innerHTML=text;
-
-          return(pdb);
-        } else {
-          return("failed")
-        }
-        
-        
-      }
-
-      async function getAF(uniacc){
-        
-        let response = await fetch('https://alphafold.ebi.ac.uk/files/AF-'+uniacc+'-F1-model_v1.pdb');
-
-        if (response.ok) { // if HTTP-status is 200-299
-          // get the response body (the method explained below)
-          let pdb = await response.text();
-          
-          // now we get for each chain the sequence and the residue numbers
-          pdbinfo={};
-          pdbtext=pdb.split("\n");
-          let resnum_old=9999999999999;
-          for(let i=0;i<pdbtext.length;i++){
-            if(pdbtext[i].startsWith("ATOM")){
-              let line=pdbtext[i].split("");
-              let ch=line.slice(21,22)
-              let resn=line.slice(17,20).join("").trim()
-              let resnum=line.slice(22,26).join("").trim()
-              if(resnum!=resnum_old){
-                if(!(ch in pdbinfo)){
-                  pdbinfo[ch]={
-                    "seq":[],
-                    "nums":[]
-                  };
-                }
-                if(resn in aa_3to1){
-                  resn_tmp=aa_3to1[resn];
-                }else{
-                  resn_tmp="X";
-                }
-                pdbinfo[ch].seq.push(resn_tmp); // one letter code
-                pdbinfo[ch].nums.push(resnum);
-                resnum_old=resnum;
-              }
-            }
-          }
-          mapU2P=processAlignment(info.uSeq,pdbinfo[chain].seq.join(""),pdbinfo[chain].nums)
-          
-          
-          pdbid="AF_"+uniacc
-          chain="A" // assumption
-          if(info.pdblist.length==0){
-            info.pdblist=["AF_"+uniacc]
-            let dropList=document.getElementById("pdblistdrop");
-            let text=""
-            
-            text+='<option style="color:black" selected>'+"AF_"+uniacc+'</option>\n'
-            
-            dropList.innerHTML=text;
-          }
-          
 
           return(pdb);
         } else {
@@ -1016,24 +900,12 @@
 
       function uniprotSubmit(acc){
         document.getElementById("loadSpin").style.display="block"
-        
-        getUniProt2(acc).then(async function(){
+        getUniProt2(acc).then(function(){
           console.log(uniObj)
           info=getInfo(uniObj);
           console.log(info)
-
-          let responseAF = await fetch('https://alphafold.ebi.ac.uk/files/AF-'+acc+'-F1-model_v1.pdb');
-          
-          afFlag=false;
-          if(responseAF.ok){
-            afFlag=true;
-          }
-
           if(info.pdblist.length>0){
             // update drop box
-            if(afFlag){
-              info.pdblist.push("AF_"+acc)
-            }
             let dropList=document.getElementById("pdblistdrop");
             let text=""
             for(let i=0;i<info.pdblist.length;i++){
@@ -1044,8 +916,6 @@
                 text+='<option style="color:black">'+info.pdblist[i]+'</option>\n'
               }
             }
-
-            
             
             dropList.innerHTML=text;
             //createUniInfo();
@@ -1053,19 +923,12 @@
             pdbid=info.pdblist[0].split("_")[0]
             chain=info.pdblist[0].split("_")[1]
             mode="rcsb";
-            getPDB(pdbid).then(function(text){  
-              pdbtext=text;
-              if(pdbtext=="failed"){
-                console.log("NO PDBID MATCH")
-                
-              }else{
-                mode="rcsb";
-                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
-              }
+            getPDB(pdbid).then(function(){  
+              loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
             });
             
           }else{
-            getAF(acc).then(function(text){
+            getSMR(acc).then(function(text){
               pdbtext=text;
               if(pdbtext=="failed"){
                 console.log("NO PDBID MATCH")
@@ -1363,45 +1226,21 @@
 
       document.getElementById("pdblistdrop").addEventListener("change", function(e){
         document.getElementById("loadSpin").style.display="block"
-        
-        if(e.target.value.startsWith("AF_")){
-          mode="SMR"
-          pdbid=e.target.value;
-          acc=pdbid.split("_")[1]
-          chain="A";
-          getAF(acc).then(function(text){
-              pdbtext=text;
-              if(pdbtext=="failed"){
-                console.log("NO PDBID MATCH")
-                
-              }else{
-                
-                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
-              }
-            });
-        }else{
-          mode="rcsb";
+        if(mode=="rcsb"){
           pdbid=e.target.value.split("_")[0];
           chain=e.target.value.split("_")[1];
-          getPDB(pdbid).then(function(text){  
-              pdbtext=text;
-              if(pdbtext=="failed"){
-                console.log("NO PDBID MATCH")
-                
-              }else{
-                
-                loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
-              }
-            });
+        }else if(mode=="SMR"){
+          pdbid=e.target.value;
+          chain="A";
         }
-        
-        
 
         
         
-        
-          
-        
+        if(info.pdblist.length>0){
+          getPDB(pdbid).then(function(){  
+            loadStructureWrapper(pdbid, chain, info, mode, pdbtext)
+          });
+        }
         
       })
 
