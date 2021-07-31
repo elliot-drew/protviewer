@@ -5,7 +5,7 @@ Idea is to create an easy and fast way for students to explore sequence annotati
 
 ### New! - will now fetch a model from the new Alphafold Database!
 
-![image](https://user-images.githubusercontent.com/25435513/125088953-d31cef00-e0c5-11eb-98c7-732edea32a11.png)
+![image](pvshot.png)
 
 A variety of annotations can be displayed, more to be added.
 
